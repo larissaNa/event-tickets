@@ -90,7 +90,7 @@ export default function AdminDashboard() {
           phone = `55${phone}`;
         }
 
-        const ticketLink = `${window.location.origin}/ingresso/${ticket.id}`;
+        const ticketLink = `https://event-tickets-seven.vercel.app/ingresso/${ticket.id}`;
         const message = `Olá ${ticket.nome}, seu pagamento foi confirmado! 🎟️\n\nAcesse seu ingresso aqui: ${ticketLink}`;
         const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
         

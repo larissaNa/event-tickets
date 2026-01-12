@@ -15,7 +15,7 @@ interface DigitalTicketProps {
 export function DigitalTicket({ ticket }: DigitalTicketProps) {
   const ticketRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const ticketUrl = `${window.location.origin}/ingresso/${ticket.id}`;
+  const ticketUrl = `https://event-tickets-seven.vercel.app/ingresso/${ticket.id}`;
   const isPaid = ticket.status_pagamento === "confirmado";
   const isUsed = ticket.usado;
 
