@@ -81,7 +81,6 @@ export default function AdminDashboard() {
     try {
       const ticket = tickets.find(t => t.id === id);
       await ticketService.confirmPayment(id);
-      toast.success("Pagamento confirmado!");
       
       if (ticket) {
         // Formata o telefone para o padrão internacional (remove não dígitos e adiciona 55 se necessário)
@@ -94,8 +93,19 @@ export default function AdminDashboard() {
         const message = `Olá ${ticket.nome}, seu pagamento foi confirmado! 🎟️\n\nAcesse seu ingresso aqui: ${ticketLink}`;
         const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
         
-        // Abre o WhatsApp em uma nova aba
+        // Mostra toast com botão para abrir WhatsApp (garantido de funcionar)
+        toast.success("Pagamento confirmado!", {
+          action: {
+            label: "Enviar WhatsApp",
+            onClick: () => window.open(whatsappUrl, '_blank')
+          },
+          duration: 8000,
+        });
+        
+        // Tenta abrir o WhatsApp diretamente (pode ser bloqueado em alguns navegadores móveis)
         window.open(whatsappUrl, '_blank');
+      } else {
+        toast.success("Pagamento confirmado!");
       }
 
       fetchTickets();
@@ -126,10 +136,10 @@ export default function AdminDashboard() {
 
   // Stats
   const stats = {
-    total: tickets.length,
-    paid: tickets.filter((t) => t.status_pagamento === "confirmado").length,
-    pending: tickets.filter((t) => t.status_pagamento === "pendente").length,
-    used: tickets.filter((t) => t.usado).length,
+    total: tickets.reduce((acc, t) => acc + (t.quantidade || 1), 0),
+    paid: tickets.filter((t) => t.status_pagamento === "confirmado").reduce((acc, t) => acc + (t.quantidade || 1), 0),
+    pending: tickets.filter((t) => t.status_pagamento === "pendente").reduce((acc, t) => acc + (t.quantidade || 1), 0),
+    used: tickets.filter((t) => t.usado).reduce((acc, t) => acc + (t.quantidade || 1), 0),
   };
 
   if (loading) {

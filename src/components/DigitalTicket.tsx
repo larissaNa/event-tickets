@@ -141,6 +141,10 @@ export function DigitalTicket({ ticket }: DigitalTicketProps) {
               <span>{ticket.telefone}</span>
             </div>
             <div className="flex items-center gap-3 text-foreground/80">
+              <TicketIcon className="w-4 h-4 text-primary" />
+              <span>{ticket.quantidade || 1} {(ticket.quantidade || 1) > 1 ? 'Ingressos' : 'Ingresso'}</span>
+            </div>
+            <div className="flex items-center gap-3 text-foreground/80">
               <Calendar className="w-4 h-4 text-primary" />
               <span className="text-sm">{formatDate(ticket.criado_em)}</span>
             </div>

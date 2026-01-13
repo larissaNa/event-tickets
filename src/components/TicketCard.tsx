@@ -1,4 +1,4 @@
-import { User, Phone, CheckCircle, Clock, XCircle, MoreVertical } from "lucide-react";
+import { User, Phone, CheckCircle, Clock, XCircle, MoreVertical, Ticket as TicketIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +53,10 @@ export function TicketCard({
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Phone className="w-4 h-4 shrink-0" />
             <span>{ticket.telefone}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+             <TicketIcon className="w-4 h-4 shrink-0" />
+             <span className="font-semibold">{ticket.quantidade || 1} {(ticket.quantidade || 1) > 1 ? 'Ingressos' : 'Ingresso'}</span>
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
             {isUsed ? (
