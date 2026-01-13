@@ -11,11 +11,21 @@ interface PixQRCodeProps {
 export function PixQRCode({ quantity }: PixQRCodeProps) {
   const [copied, setCopied] = useState(false);
   const PIX_CODE = "03348965330"; // Chave Pix para cópia
-
+  
   // Seleciona a imagem do QR Code baseada na quantidade
-  // Se for 1 ingresso, usa QRCODE30.jpg (R$ 30,00)
-  // Se for mais de 1, usa QRCODE.jpg (valor a definir/somar)
-  const qrCodeImage = quantity === 1 ? "/QRCODE30.jpg" : "/QRCODE.jpg";
+  const getQrCodeImage = (qtd: number) => {
+    switch (qtd) {
+      case 1: return "/QRCODE30.jpg";
+      case 2: return "/QRCODE60.jpeg";
+      case 3: return "/QRCODE90.jpeg";
+      case 4: return "/QRCODE120.jpeg";
+      case 5: return "/QRCODE150.jpeg";
+      case 6: return "/QRCODE180.jpeg";
+      default: return "/QRCODE30.jpg";
+    }
+  };
+
+  const qrCodeImage = getQrCodeImage(quantity);
 
   const handleCopy = async () => {
     try {

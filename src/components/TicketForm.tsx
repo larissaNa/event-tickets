@@ -14,6 +14,7 @@ export function TicketForm({ onSubmit, isLoading }: TicketFormProps) {
   const [telefone, setTelefone] = useState("");
   const [quantidade, setQuantidade] = useState(1);
   const TICKET_PRICE = 30;
+  const MAX_TICKETS = 6;
 
   const formatPhone = (value: string) => {
     const numbers = value.replace(/\D/g, "");
@@ -82,22 +83,28 @@ export function TicketForm({ onSubmit, isLoading }: TicketFormProps) {
             id="quantidade"
             type="number"
             min="1"
+            max={MAX_TICKETS}
             value={quantidade}
-            onChange={(e) => setQuantidade(Math.max(1, parseInt(e.target.value) || 1))}
+            onChange={(e) => {
+              const val = parseInt(e.target.value) || 1;
+              setQuantidade(Math.min(Math.max(1, val), MAX_TICKETS));
+            }}
             className="h-12 text-center text-lg bg-secondary border-border focus:border-primary focus:ring-primary"
           />
           <Button
             type="button"
             variant="outline"
             className="h-12 w-12 text-xl"
-            onClick={() => setQuantidade(quantidade + 1)}
+            onClick={() => setQuantidade(Math.min(MAX_TICKETS, quantidade + 1))}
+            disabled={quantidade >= MAX_TICKETS}
           >
             +
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground text-right">
-          Total: R$ {(quantidade * TICKET_PRICE).toFixed(2)}
-        </p>
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <span>Máximo de {MAX_TICKETS} ingressos por compra (1 mesa)</span>
+          <span>Total: R$ {(quantidade * TICKET_PRICE).toFixed(2)}</span>
+        </div>
       </div>
 
       <Button
