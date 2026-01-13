@@ -78,38 +78,46 @@ export default function AdminDashboard() {
   };
 
   const handleConfirmPayment = async (id: string) => {
+    // Busca os dados do ticket antes para poder abrir a janela
+    const ticket = tickets.find(t => t.id === id);
+    let whatsappWindow: Window | null = null;
+    let whatsappUrl = '';
+
+    if (ticket) {
+      // Prepara a URL do WhatsApp
+      let phone = ticket.telefone.replace(/\D/g, '');
+      if (phone.length <= 11) {
+        phone = `55${phone}`;
+      }
+      const ticketLink = `https://event-tickets-seven.vercel.app/ingresso/${ticket.id}`;
+      const message = `Olá ${ticket.nome}, seu pagamento foi confirmado! 🎟️\n\nAcesse seu ingresso aqui: ${ticketLink}`;
+      whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+      // Abre a janela imediatamente (contexto síncrono do clique) para evitar bloqueio de popup
+      whatsappWindow = window.open('', '_blank');
+      if (whatsappWindow) {
+        whatsappWindow.document.write('<html><head><title>Aguarde...</title></head><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;"><h1>Confirmando pagamento e redirecionando para o WhatsApp...</h1></body></html>');
+      }
+    }
+
     try {
-      const ticket = tickets.find(t => t.id === id);
       await ticketService.confirmPayment(id);
       
-      if (ticket) {
-        // Formata o telefone para o padrão internacional (remove não dígitos e adiciona 55 se necessário)
-        let phone = ticket.telefone.replace(/\D/g, '');
-        if (phone.length <= 11) {
-          phone = `55${phone}`;
-        }
-
-        const ticketLink = `https://event-tickets-seven.vercel.app/ingresso/${ticket.id}`;
-        const message = `Olá ${ticket.nome}, seu pagamento foi confirmado! 🎟️\n\nAcesse seu ingresso aqui: ${ticketLink}`;
-        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-        
-        // Mostra toast com botão para abrir WhatsApp (garantido de funcionar)
-        toast.success("Pagamento confirmado!", {
-          action: {
-            label: "Enviar WhatsApp",
-            onClick: () => window.open(whatsappUrl, '_blank')
-          },
-          duration: 8000,
-        });
-        
-        // Tenta abrir o WhatsApp diretamente (pode ser bloqueado em alguns navegadores móveis)
+      if (whatsappWindow && whatsappUrl) {
+        // Redireciona a janela previamente aberta
+        whatsappWindow.location.href = whatsappUrl;
+      } else if (ticket) {
+        // Fallback caso a janela não tenha aberto (bloqueio muito agressivo)
         window.open(whatsappUrl, '_blank');
-      } else {
-        toast.success("Pagamento confirmado!");
       }
 
+      toast.success("Pagamento confirmado!");
       fetchTickets();
     } catch (error) {
+      // Se der erro, fecha a janela que foi aberta
+      if (whatsappWindow) {
+        whatsappWindow.close();
+      }
       toast.error("Erro ao confirmar pagamento");
     }
   };
